@@ -169,5 +169,5 @@ For every change:
 - perform a Git dry run before pushing and confirm forbidden local assets remain
   ignored.
 
-The Git remote is `https://github.com/kelleyparker/ReeroVault-Android.git`, with
+The Git remote is `https://github.com/kelleyparker/RetroVault-Android.git`, with
 `main` as the publication branch.
