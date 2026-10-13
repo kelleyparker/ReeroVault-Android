@@ -1,0 +1,27 @@
+*.iml
+.gradle/
+.idea/
+local.properties
+build/
+app/build/
+.cxx/
+captures/
+# Local build/test artifacts can contain embedded ROM data or ROM screenshots.
+output/
+third_party/libretro-fceumm/.git/
+.toolchains/
+build-tmp-rom/
+
+# ROMs are user-owned local inputs and must never enter source control.
+app/src/main/assets/roms/
+*.nes
+*.fds
+*.unf
+*.unif
+*.sfc
+*.smc
+*.gb
+*.gbc
+*.gba
+*.zip
+*.7z
