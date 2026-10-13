@@ -22,6 +22,10 @@ Date: 2026-10-12
 - Portrait-to-landscape reflow during an active emulation session
 - Clean force-stop and cold relaunch after gameplay
 - Empty Android crash buffer after the repaired build's runtime pass
+- USB ADB connection using the signed Google Android driver
+- Xbox Wireless Controller detected over Bluetooth as an Android gamepad/joystick
+- Physical Xbox D-pad/left-stick events received during gameplay and Mario movement observed
+- Android Xbox A/B/Menu/View key translation matches the app's NES mappings
 
 ## Runtime defect found and fixed
 
@@ -35,7 +39,7 @@ allowing FCEUmm to retain its defaults. The rebuilt APK passed the device tests 
 
 - Audio output and frame pacing
 - Touch multitouch during gameplay
-- Xbox Bluetooth controller connection and mapping
+- Button-by-button physical Xbox input capture, disconnect/reconnect behavior, and remapping UI
 - Battery-backed SRAM with a cartridge that actually uses save RAM
 
 These items require listening to the phone or interacting with physical multi-touch and

@@ -80,6 +80,11 @@ Android 16. Verified results:
 - state save and restore;
 - orientation change during active emulation;
 - clean force-stop and cold relaunch;
+- stable USB ADB after installing the signed Google Android driver;
+- Xbox Wireless Controller detection over Bluetooth as a standard Android
+  gamepad/joystick;
+- physical D-pad/left-stick input reaching gameplay and moving Mario;
+- Android's Xbox A/B/Menu/View translations matching the app's NES mappings;
 - no crash entry after the repaired runtime pass.
 
 The initial device build exposed a native crash in `retro_load_game()`. The host
@@ -92,7 +97,8 @@ Still requiring hands-on validation:
 
 - audible audio quality and sustained frame pacing;
 - true simultaneous physical multitouch;
-- Xbox Bluetooth connection, reconnection, and mappings;
+- complete physical button-by-button Xbox capture, disconnect/reconnect behavior,
+  and user-configurable remapping;
 - battery-backed SRAM with a title that uses save RAM;
 - Samsung Galaxy S25 installation and device behavior.
 
