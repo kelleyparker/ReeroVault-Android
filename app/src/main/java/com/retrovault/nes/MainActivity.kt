@@ -69,11 +69,13 @@ class MainActivity : ComponentActivity() {
         if (!playing || event.action != MotionEvent.ACTION_MOVE || event.source and InputDevice.SOURCE_JOYSTICK != InputDevice.SOURCE_JOYSTICK) return super.dispatchGenericMotionEvent(event)
         val x = event.getAxisValue(MotionEvent.AXIS_X)
         val y = event.getAxisValue(MotionEvent.AXIS_Y)
-        engine.input.setGamepad(NesButtons.LEFT, x < -0.45f)
-        engine.input.setGamepad(NesButtons.RIGHT, x > 0.45f)
-        engine.input.setGamepad(NesButtons.UP, y < -0.45f)
-        engine.input.setGamepad(NesButtons.DOWN, y > 0.45f)
-        return abs(x) > 0.1f || abs(y) > 0.1f || super.dispatchGenericMotionEvent(event)
+        val hatX = event.getAxisValue(MotionEvent.AXIS_HAT_X)
+        val hatY = event.getAxisValue(MotionEvent.AXIS_HAT_Y)
+        engine.input.setGamepad(NesButtons.LEFT, x < -0.45f || hatX < -0.5f)
+        engine.input.setGamepad(NesButtons.RIGHT, x > 0.45f || hatX > 0.5f)
+        engine.input.setGamepad(NesButtons.UP, y < -0.45f || hatY < -0.5f)
+        engine.input.setGamepad(NesButtons.DOWN, y > 0.45f || hatY > 0.5f)
+        return abs(x) > 0.1f || abs(y) > 0.1f || abs(hatX) > 0.1f || abs(hatY) > 0.1f || super.dispatchGenericMotionEvent(event)
     }
 
     @Composable

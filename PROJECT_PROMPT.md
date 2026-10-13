@@ -93,6 +93,11 @@ value. FCEUmm's DIP-switch path then called `strcmp()` on it. The host now retur
 `false` for unsupported variable lookups so the core retains defaults. Do not
 regress this libretro callback contract.
 
+The Xbox controller's physical D-pad reports `AXIS_HAT_X`/`AXIS_HAT_Y` on the
+tested phone. The gamepad motion handler combines those hat axes with the left
+stick's `AXIS_X`/`AXIS_Y`, allowing either control to drive the same NES direction
+bits. Preserve both input paths.
+
 Still requiring hands-on validation:
 
 - audible audio quality and sustained frame pacing;

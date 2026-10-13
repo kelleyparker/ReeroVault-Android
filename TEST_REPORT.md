@@ -24,7 +24,7 @@ Date: 2026-10-12
 - Empty Android crash buffer after the repaired build's runtime pass
 - USB ADB connection using the signed Google Android driver
 - Xbox Wireless Controller detected over Bluetooth as an Android gamepad/joystick
-- Physical Xbox D-pad/left-stick events received during gameplay and Mario movement observed
+- Physical Xbox D-pad hat-axis and left-stick events received during gameplay, with Mario movement observed from both directional sources
 - Android Xbox A/B/Menu/View key translation matches the app's NES mappings
 
 ## Runtime defect found and fixed
@@ -34,6 +34,13 @@ success for `RETRO_ENVIRONMENT_GET_VARIABLE` while supplying a null value. FCEUm
 DIP-switch path correctly treats a successful lookup as a valid string and called
 `strcmp()` on it. The frontend now returns `false` for unsupported option lookups,
 allowing FCEUmm to retain its defaults. The rebuilt APK passed the device tests above.
+
+The Xbox controller's left stick originally worked while its physical D-pad did
+not. This controller exposes the D-pad through `AXIS_HAT_X`/`AXIS_HAT_Y`, not
+only directional key events. The gamepad motion handler now combines the hat axes
+with `AXIS_X`/`AXIS_Y`, so the physical D-pad and left stick drive the same NES
+directions. Physical hat-axis events and resulting gameplay movement were verified
+on the Nothing phone.
 
 ## Still requires hands-on validation
 
@@ -49,4 +56,4 @@ Bluetooth hardware; they are not claimed as passed from ADB evidence alone.
 
 - File: `output/RetroVault-NES-0.1.0-debug.apk`
 - Size: 14,250,710 bytes
-- SHA-256: `7CEB68C7A628E16AF9D9C6579A9244E01BBEE1900533223E8A584A8FD69F1CF6`
+- SHA-256: `7963032FD165C0F4C5AD236845B9D07518425C2D8DA8387B2C63AB17C7B08267`
