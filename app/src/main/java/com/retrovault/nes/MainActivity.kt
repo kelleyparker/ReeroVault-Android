@@ -27,7 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.retrovault.nes.emulation.EmulatorEngine
+import com.retrovault.nes.emulation.GamepadMapper
 import com.retrovault.nes.emulation.NesButtons
+import com.retrovault.nes.ui.ControllerDiagnostics
 import com.retrovault.nes.ui.GameView
 import kotlin.math.abs
 
@@ -35,10 +37,13 @@ class MainActivity : ComponentActivity() {
     private lateinit var engine: EmulatorEngine
     private var playing by mutableStateOf(false)
     private var status by mutableStateOf<String?>(null)
+    private var swapAB by mutableStateOf(false)
+    private val diagnostics = ControllerDiagnostics()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        swapAB = getSharedPreferences(PREFS, MODE_PRIVATE).getBoolean(PREF_SWAP_AB, false)
         engine = EmulatorEngine(this).apply { errorConsumer = { runOnUiThread { status = it } } }
         setContent { RetroTheme { if (playing) GameScreen() else LibraryScreen() } }
     }
@@ -48,24 +53,16 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() { engine.stop(); super.onDestroy() }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.isGamepadEvent()) diagnostics.onKey(event)
         if (!playing || !event.isGamepadEvent()) return super.dispatchKeyEvent(event)
-        val button = when (event.keyCode) {
-            KeyEvent.KEYCODE_BUTTON_A -> NesButtons.A
-            KeyEvent.KEYCODE_BUTTON_B -> NesButtons.B
-            KeyEvent.KEYCODE_BUTTON_START -> NesButtons.START
-            KeyEvent.KEYCODE_BUTTON_SELECT, KeyEvent.KEYCODE_BUTTON_MODE -> NesButtons.SELECT
-            KeyEvent.KEYCODE_DPAD_UP -> NesButtons.UP
-            KeyEvent.KEYCODE_DPAD_DOWN -> NesButtons.DOWN
-            KeyEvent.KEYCODE_DPAD_LEFT -> NesButtons.LEFT
-            KeyEvent.KEYCODE_DPAD_RIGHT -> NesButtons.RIGHT
-            else -> 0
-        }
+        val button = GamepadMapper.buttonForKey(event.keyCode, swapAB)
         if (button == 0) return super.dispatchKeyEvent(event)
         engine.input.setGamepad(button, event.action == KeyEvent.ACTION_DOWN)
         return true
     }
 
     override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
+        if (event.source and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK) diagnostics.onMotion(event)
         if (!playing || event.action != MotionEvent.ACTION_MOVE || event.source and InputDevice.SOURCE_JOYSTICK != InputDevice.SOURCE_JOYSTICK) return super.dispatchGenericMotionEvent(event)
         val x = event.getAxisValue(MotionEvent.AXIS_X)
         val y = event.getAxisValue(MotionEvent.AXIS_Y)
@@ -127,6 +124,26 @@ class MainActivity : ComponentActivity() {
             }
             if (landscape) SystemButtons(Modifier.align(Alignment.BottomCenter).width(220.dp).height(54.dp))
             if (message != null) Snackbar(Modifier.align(Alignment.TopCenter).padding(16.dp)) { Text(message) }
+            TextButton(onClick = { diagnostics.enabled = !diagnostics.enabled }, modifier = Modifier.align(Alignment.TopEnd)) {
+                Text("PAD", color = Color.Gray, fontSize = 11.sp)
+            }
+            if (diagnostics.enabled) ControllerPanel(Modifier.align(Alignment.TopStart))
+        }
+    }
+
+    @Composable
+    private fun ControllerPanel(modifier: Modifier) {
+        Column(modifier.padding(8.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xCC000000)).padding(10.dp)) {
+            Text("Controller diagnostics", color = Color.White, fontSize = 11.sp)
+            Text(diagnostics.device, color = Color(0xFFAAAAAF), fontSize = 10.sp)
+            Text("Last key: ${diagnostics.lastKey}", color = Color(0xFFAAAAAF), fontSize = 10.sp)
+            Text("Axes: ${diagnostics.axes}", color = Color(0xFFAAAAAF), fontSize = 10.sp)
+            TextButton(onClick = {
+                swapAB = !swapAB
+                getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(PREF_SWAP_AB, swapAB).apply()
+            }) {
+                Text(if (swapAB) "Face buttons: Nintendo (A/B swapped)" else "Face buttons: Xbox (default)", fontSize = 11.sp)
+            }
         }
     }
 
@@ -200,8 +217,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun KeyEvent.isGamepadEvent() = source and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD || source and InputDevice.SOURCE_DPAD == InputDevice.SOURCE_DPAD
+    // Some HID gamepads omit SOURCE_GAMEPAD on key events, so also accept gamepad keycodes.
+    private fun KeyEvent.isGamepadEvent() = source and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD ||
+        source and InputDevice.SOURCE_DPAD == InputDevice.SOURCE_DPAD || KeyEvent.isGamepadButton(keyCode)
 }
+
+private const val PREFS = "retrovault_prefs"
+private const val PREF_SWAP_AB = "swap_ab"
 
 @Composable
 private fun RetroTheme(content: @Composable () -> Unit) {

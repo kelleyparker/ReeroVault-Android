@@ -12,6 +12,7 @@ expanded.
 - Sharp 4:3 gameplay rendering in portrait and landscape
 - Multitouch D-pad, A, B, Start, and Select controls
 - Xbox/Android gamepad buttons, physical D-pad, and left-stick input
+- Controller diagnostics panel (`PAD`) and A/B swap for Nintendo-style layouts
 - Low-latency 48 kHz stereo audio
 - Battery SRAM persistence plus manual state save/load
 - Edge-to-edge Compose UI with safe-inset handling
