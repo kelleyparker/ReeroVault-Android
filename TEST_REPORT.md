@@ -49,6 +49,14 @@ on the Nothing phone.
 - Button-by-button physical Xbox input capture, disconnect/reconnect behavior, and remapping UI
 - Battery-backed SRAM with a cartridge that actually uses save RAM
 
+### Nintendo Switch 2 Pro Controller (Bluetooth) — not yet validated
+
+Added but not built or run: a `PAD` diagnostics panel (device name, vendor/product ID,
+axes, last keycode, active axis values; also logged under Logcat tag `RetroVaultPad`),
+an A/B face-button swap setting, and `GamepadMapper` with unit tests. Whether Android 16
+exposes the Switch 2 Pro Controller as a standard gamepad is unknown until it is paired
+with the Nothing phone and its diagnostics output is captured.
+
 These items require listening to the phone or interacting with physical multi-touch and
 Bluetooth hardware; they are not claimed as passed from ADB evidence alone.
 
