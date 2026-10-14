@@ -75,3 +75,26 @@ and the GPLv2 text is in [LICENSE](LICENSE).
 See [TEST_REPORT.md](TEST_REPORT.md) for exactly what has and has not been validated.
 This is an early NES-only milestone; SNES, Game Boy, and Game Boy Color directory names
 are reserved for later cores and are not yet playable.
+
+## Next steps (resume here)
+
+Nintendo Switch 2 Pro Controller over Bluetooth, tested on a Nothing Phone (4a) Pro
+(Android 16):
+
+1. Build `main` and run the unit tests. The controller diagnostics code
+   (`ControllerDiagnostics.kt`, `GamepadMapper.kt`) has never been compiled or run:
+   `.\gradlew.bat testDebugUnitTest assembleDebug`
+2. Pair the controller (hold the sync button on top, pair in Android Bluetooth settings),
+   start the game, tap `PAD`, and press every button, stick, and trigger.
+3. Capture what Android reports:
+   `adb logcat -d -s RetroVaultPad`, `adb shell getevent -lp`, `adb shell dumpsys input`.
+   If nothing is reported, Android is not treating the controller as a gamepad and an
+   app-side fix may not be possible.
+4. Fix the button mapping and the A/B swap default from the capture, with unit tests.
+5. Check that unplugging or disconnecting a controller does not leave a button stuck
+   (`InputState.clearGamepad` exists but is not called on disconnect).
+6. Record only hardware-verified results in [TEST_REPORT.md](TEST_REPORT.md).
+
+Other open items are listed under "Still requires hands-on validation" in
+[TEST_REPORT.md](TEST_REPORT.md): audio and frame pacing, touch multitouch, and
+battery-backed SRAM. Longer-term direction is in [PROJECT_PROMPT.md](PROJECT_PROMPT.md).
